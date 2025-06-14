@@ -17,6 +17,10 @@ from dtpr.utils.genmuon_functions import analyze_genmuon_showers
 # - fwshower_eff_MB2
 # - fwshower_eff_MB3
 # - fwshower_eff_MB4
+# - fwshower_eff_MB1_onlytpfp
+# - fwshower_eff_MB2_onlytpfp
+# - fwshower_eff_MB3_onlytpfp
+# - fwshower_eff_MB4_onlytpfp
 # ---- for G4DtNtuple ----
 # - shower_tpfptnfn_g4
 # ----- for real showers -----
@@ -162,7 +166,15 @@ for st in stations:
             "func"     : partial(shower_eff_func, station=st),
             "numdef"   : partial(shower_eff_numdef, station=st),
         },
+        f"fwshower_eff_MB{st}_onlytpfp":{
+            "type": "eff",
+            "histoDen" : r.TH1D(f"Fwshower_eff_MB{st}_onlytpfp_total", r';Wheel; Events', 5, -2.5 , 2.5),
+            "histoNum" : r.TH1D(f"Fwshower_eff_MB{st}_onlytpfp_num", r';Wheel; Events', 5, -2.5 , 2.5),
+            "func"     : partial(shower_eff_func, station=st, opt=2),
+            "numdef"   : partial(shower_eff_numdef, station=st, opt=2),
+        },
     })
+
 
 histos.update({ # conf map for G4DtNtuple
     "shower_tpfptnfn_g4": {

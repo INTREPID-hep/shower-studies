@@ -10,9 +10,10 @@ fi
 threshold=$1
 
 # Define the base input directory and output options
-base_input_dir="/lustrefs/hdd_pool_dir/L1T/Filter/ThresholdScan_Zprime_DY/last/ZprimeToMuMu_M-6000_PU200/"
+# base_input_dir="/lustrefs/hdd_pool_dir/L1T/Filter/ThresholdScan_Zprime_DY/last/ZprimeToMuMu_M-6000_PU200/"
+base_input_dir="../../ZprimeToMuMu_M-6000_TuneCP5_14TeV-pythia8/ZprimeToMuMu_M-6000_PU200/"
 output_dir="."
-tag_prefix="_thr_rsfix"
+tag_prefix="_onlytpfp_thr_"
 
 # Search for the input file matching the threshold
 input_file=$(find "$base_input_dir" -type f -path "*/0000/*thr${threshold}*.root" | head -n 1)
@@ -30,4 +31,4 @@ input_dir=$(dirname "$input_file")
 # sed -i "s/threshold: [0-9]\+/threshold: $threshold/" run_config.yaml
 
 # Execute the dtpr fill-histos command
-dtpr fill-histos -i "$input_dir/" -o "$output_dir" --tag="${tag_prefix}${threshold}"
+dtpr fill-histos -i "$input_dir/" -o "$output_dir" -cf ./run_config.yaml --tag="${tag_prefix}${threshold}"

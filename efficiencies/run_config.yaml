@@ -166,23 +166,27 @@ histo_sources:
 histo_names:
   # Histogram to fill - Uncomment or add histograms as needed. 
   # They should exist in any of the source modules
-  # --------- truth types --------- #
-  - showered_genmuon_meth1_eff
-  - showered_genmuon_meth2_eff
-  - showered_genmuon_meth3_eff
-  # ============ efficiencies ============ #
-  - fwshower_eff_MB1
-  - fwshower_eff_MB2
-  - fwshower_eff_MB3
-  - fwshower_eff_MB4
-  # ------ conf maps------
-  - shower_tpfptnfn_MB1
-  - shower_tpfptnfn_MB2
-  - shower_tpfptnfn_MB3
-  - shower_tpfptnfn_MB4
-  - shower_tpfptnfn_g4
-  # real showers
-  - realshower_type_dist_MB1
-  - realshower_type_dist_MB2
-  - realshower_type_dist_MB3
-  - realshower_type_dist_MB4
+  # # --------- truth types --------- #
+  # - showered_genmuon_meth1_eff
+  # - showered_genmuon_meth2_eff
+  # - showered_genmuon_meth3_eff
+  # # ============ efficiencies ============ #
+  # - fwshower_eff_MB1
+  # - fwshower_eff_MB2
+  # - fwshower_eff_MB3
+  # - fwshower_eff_MB4
+  - fwshower_eff_MB1_onlytpfp
+  - fwshower_eff_MB2_onlytpfp
+  - fwshower_eff_MB3_onlytpfp
+  - fwshower_eff_MB4_onlytpfp
+  # # ------ conf maps------
+  # - shower_tpfptnfn_MB1
+  # - shower_tpfptnfn_MB2
+  # - shower_tpfptnfn_MB3
+  # - shower_tpfptnfn_MB4
+  # - shower_tpfptnfn_g4
+  # # real showers
+  # - realshower_type_dist_MB1
+  # - realshower_type_dist_MB2
+  # - realshower_type_dist_MB3
+  # - realshower_type_dist_MB4
