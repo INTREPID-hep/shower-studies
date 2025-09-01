@@ -4,7 +4,7 @@ This script is used to dump digis and showers from ntuples.
 import os
 from dtpr.base import Event, NTuple
 from dtpr.utils.functions import color_msg, create_outfolder, get_unique_locs
-from dtpr.utils.config import RUN_CONFIG
+from dtpr.base.config import RUN_CONFIG
 from tqdm import tqdm
 from collections import deque
 

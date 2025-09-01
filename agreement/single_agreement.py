@@ -106,8 +106,8 @@ def stimate_agreements(fpga_showers, cmssw_showers, cmssw_hits_in, fpga_hits_in 
 
 def main():
     wh = -1
-    sc = 12
-    st = 3
+    sc = 10
+    st = 1
 
     base_dir = os.path.join(os.path.abspath(os.path.dirname(__file__)), "data/")
 

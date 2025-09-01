@@ -2,7 +2,7 @@
 
 In this section, the goal is to estimate an efficiency for the algorithm that generates the DT shower primitives.
 
-It is important to consider that, since the algorithm is based on a simple count of hits arriving at the detector, it is quite common for some cases triggered as a shower not to necessarily correspond to events caused by radiation from a muon. Therefore, to evaluate this, it is worth defining what is considered a "real shower." This can be done with the module `shower_functions.py` using the function `build_real_showers`. A notion of a real shower can also be obtained from the muons generated with the module `dtpr.utils.genmuon_functions` using the method `analyze_genmuon_showers`.
+It is important to consider that, since the algorithm is based on a simple count of hits arriving at the detector, it is quite common for some cases triggered as a shower not to necessarily correspond to events caused by radiation from a muon. Therefore, to evaluate this, it is worth defining what is considered a "real shower." This can be done with the module `shower_functions.py` using the function `build_real_showers`. A notion of a real shower can also be obtained from the muons generated with the module `utils.genmuon_functions` using the method `analyze_genmuon_showers`.
 
 ### build_real_showers:
 This function analyzes the `simhits` and `digis` at the Super Layer level of an event and constructs shower primitives based on their properties according to the following conditions:

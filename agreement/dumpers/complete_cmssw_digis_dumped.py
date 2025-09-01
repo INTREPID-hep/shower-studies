@@ -2,7 +2,7 @@ import os
 import subprocess
 import shutil
 from dtpr.base import NTuple
-from dtpr.utils.config import RUN_CONFIG
+from dtpr.base.config import RUN_CONFIG
 from dtpr.utils.functions import color_msg
 import pandas as pd
 

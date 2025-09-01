@@ -1,5 +1,5 @@
 from dtpr.utils.functions import color_msg
-from dtpr.utils.root_plot_functions import *
+from utils.root_plot_functions import *
 
 def main():
     # --- Files to be used --- #

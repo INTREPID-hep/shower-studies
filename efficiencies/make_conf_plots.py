@@ -16,7 +16,7 @@ def main():
     folder = "."
     histo_name = "shower_tpfptnfn_MBX"
 
-    f = r.TFile.Open( folder + "/histograms/histograms_thr_rsfix8.root")
+    f = r.TFile.Open( folder + "/histograms/histograms_thr_rsfix6.root")
     pre, pos = histo_name.split("MB")
     histos = [ deepcopy( f.Get( f"{pre}MB{ist}{pos[1:]}")) for ist in range(1, 5) ]
     f.Close()
@@ -53,18 +53,20 @@ def main():
     labels = np.array([["TP", "TN"], ["FP", "FN"]])
     for x, y in np.ndindex(conf_map.shape):
         label = labels[x%2, y%2]
-        color = "k" if label == "TN" else "w"
-        ax.text(y, x, f"{label}={conf_map[x, y]:.2f}", ha="center", va="center", color=color, fontsize=8)
+        color = "w"#"k" if label == "TN" else "w"
+        ax.text(y, x, f"{label}={conf_map[x, y]:.2f}", ha="center", va="center", color=color, fontsize=9, fontweight="bold")
 
     for st in range(4):
         for iWheel in range(5):
-            ax.text(iWheel * 2 + 0.5, st * 2 + 0.5, f"{totals[st, iWheel]:.0f}", ha="center", va="center", color="w", fontsize=8,
+            ax.text(iWheel * 2 + 0.5, st * 2 + 0.5, f"eff = {conf_map[st * 2, iWheel * 2]+conf_map[ st * 2, (iWheel * 2) + 1]:.2f}", ha="center", va="center", color="w", fontsize=10,
                     bbox=dict(facecolor='black', alpha=0.5, edgecolor='none'), fontweight="bold")
+            # ax.text(iWheel * 2 + 0.5, st * 2 + 0.5, f"{totals[st, iWheel]:.0f}", ha="center", va="center", color="w", fontsize=8,
+            #         bbox=dict(facecolor='black', alpha=0.5, edgecolor='none'), fontweight="bold")
 
     fig.colorbar(im, ax=ax, orientation="horizontal", pad=0.01, location="top")
     fig.tight_layout()
-    fig.savefig(folder + "/plots/confusion_maps/conf_map_thr8.pdf")
-    fig.savefig(folder + "/plots/confusion_maps/conf_map_thr8.svg")
+    fig.savefig(folder + "/plots/confusion_maps/conf_map_thr6_eff.pdf")
+    fig.savefig(folder + "/plots/confusion_maps/conf_map_thr6_eff.svg")
 
 if __name__ == "__main__":
     main()

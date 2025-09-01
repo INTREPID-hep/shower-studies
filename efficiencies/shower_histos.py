@@ -1,7 +1,7 @@
 import ROOT as r
 from functools import partial
 from dtpr.utils.functions import stations, get_unique_locs
-from dtpr.utils.genmuon_functions import analyze_genmuon_showers
+from utils.genmuon_functions import analyze_genmuon_showers
 
 # Histograms defined here...
 # --- for genmuons -----

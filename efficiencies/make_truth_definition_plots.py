@@ -1,5 +1,5 @@
 import ROOT as r
-import dtpr.utils.root_plot_functions as rpf
+import utils.root_plot_functions as rpf
 from dtpr.utils.functions import color_msg
 
 
