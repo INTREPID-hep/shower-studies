@@ -192,7 +192,7 @@ def plot_dt_chambers(
 if __name__ == "__main__":
     RUN_CONFIG.change_config_file("./run_config.yaml")
     plot_dt_chambers(
-        inpath = "../../ZprimeToMuMu_M-6000_TuneCP5_14TeV-pythia8/ZprimeToMuMu_M-6000_PU200/250312_131631/0000/",
+        inpath = "../ntuples/DTDPGNtuple_12_4_2_Phase2Concentrator_thr6_Simulation_110.root",
         outfolder=".",
         tag="test",
         maxfiles=-1,

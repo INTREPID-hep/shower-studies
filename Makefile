@@ -9,6 +9,7 @@ DTPR_VERSION?=3.0.0
 _GIT_MPLDTS?=git+https://github.com/DanielEstrada971102/mplDTs.git@v$(MPLDTS_VERSION)
 _GIT_DTPR?=git+https://github.com/DanielEstrada971102/DTPatternRecognition.git@v$(DTPR_VERSION)
 
+
 # ------------------------------
 # Internal helper: check ROOT and set PYTHONPATH
 # ------------------------------
@@ -57,17 +58,14 @@ reinstall-mpldts-dev-if-needed:
 		echo "✅ mplDTs reinstalled"; \
 	}
 
-
 comment-mpldts-in-pyproject:
 	sed -i '/mplDTs/s/^/# /' $(DTPR_PATH)/pyproject.toml
 
-add-path:
-	export PYTHONPATH=$$PWD:$$PYTHONPATH;
 # ------------------------------
 # Targets
 # ------------------------------
 
-.PHONY: install install-local dev dev-local clean help
+.PHONY: install install-local dev dev-local clean help set-path
 
 help:
 	@echo "Available targets:"
@@ -83,13 +81,14 @@ help:
 install: check-root
 	pip install $(_GIT_DTPR)
 	@$(MAKE) reinstall-mpldts-if-needed
+	$(MAKE) set-path
 
 # Install using local paths (editable mode)
 install-local: check-root check-local-repos
 	@$(MAKE) comment-mpldts-in-pyproject
 	pip install -e $(MPLDTS_PATH)
 	pip install -e $(DTPR_PATH)
-	$(MAKE) add-path
+	$(MAKE) set-path
 
 # Development mode: create/use a venv and install GitHub deps (non-editable)
 dev: check-root
@@ -102,9 +101,9 @@ dev: check-root
 	$(ENV_DIR)/bin/pip install --upgrade pip
 	$(ENV_DIR)/bin/pip install $(_GIT_DTPR)
 	@$(MAKE) reinstall-mpldts-dev-if-needed
-	$(MAKE) add-path
 	@echo "✅ Dev environment ready in $(ENV_DIR)"
 	@echo "👉 Activate it with: source $(ENV_DIR)/bin/activate"
+	$(MAKE) set-path
 
 # Development mode: create/use a venv and install local deps editable
 dev-local: check-root check-local-repos
@@ -118,9 +117,9 @@ dev-local: check-root check-local-repos
 	@$(MAKE) comment-mpldts-in-pyproject
 	$(ENV_DIR)/bin/pip install -e $(MPLDTS_PATH)
 	$(ENV_DIR)/bin/pip install -e $(DTPR_PATH)
-	$(MAKE) add-path
 	@echo "✅ Dev environment ready in $(ENV_DIR)"
 	@echo "👉 Activate it with: source $(ENV_DIR)/bin/activate"
+	$(MAKE) set-path
 
 # Clean build artifacts + optionally delete venv
 clean:
@@ -136,3 +135,7 @@ delete-venv:
 		echo "⚠️  No virtual environment found in $(ENV_DIR)"; \
 	fi
 	$(MAKE) clean
+
+set-path:
+	@echo "👉 Ensure to have project root in PYTHONPATH. You can do this by running:"
+	@echo "   export PYTHONPATH=\$$PYTHONPATH:$(PWD)"

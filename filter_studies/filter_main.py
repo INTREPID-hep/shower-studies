@@ -271,7 +271,7 @@ def main():
         os.path.abspath(
             os.path.join(\
                 os.path.dirname(__file__), 
-                "../../ZprimeToMuMu_M-6000_TuneCP5_14TeV-pythia8/ZprimeToMuMu_M-6000_PU200/250312_131631/0000"#/DTDPGNtuple_12_4_2_Phase2Concentrator_thr6_Simulation_99.root"
+                "../ntuples/DTDPGNtuple_12_4_2_Phase2Concentrator_thr6_Simulation_99.root",
             )
         )
     ))
