@@ -3,7 +3,7 @@
 # ------------------------------
 MPLDTS_PATH?=../mplDTs
 DTPR_PATH?=../DTPatternRecognition
-ENV_DIR?=.venv
+ENV_DIR?=env
 MPLDTS_VERSION?=2.2.0-beta
 DTPR_VERSION?=3.3.0-beta
 _GIT_MPLDTS?=git+https://github.com/INTREPID-hep/mplDTs.git@v$(MPLDTS_VERSION)
