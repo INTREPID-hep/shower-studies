@@ -9,7 +9,7 @@ from mpldts.patches import DTStationPatch, MultiDTSegmentsPatch
 from dtpr.base import NTuple
 from dtpr.utils.functions import color_msg, get_unique_locs
 from dtpr.base.config import RUN_CONFIG
-from filter_matching_functions import  ray_rect_matching, ray_seg_matching
+from .filter_matching_functions import  ray_rect_matching, ray_seg_matching
 from functools import partial, cache
 
 # ----------- Auxiliary functions and variables ---------------

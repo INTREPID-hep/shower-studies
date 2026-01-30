@@ -245,6 +245,18 @@ def build_real_showers(ev: Event, threshold: Optional[int] = None,Filtersimhits:
 
 
 
+        # simhits_sdf = simhits_sdf.drop_duplicates(["wh", "sc", "st", "sl", "l", "w", "process"])
+        # digis_sdf = digis_sdf.drop_duplicates(["wh", "sc", "st", "sl", "l", "w", "time"])
+
+        # if not simhits_sdf.empty:
+        #     print(simhits_sdf)
+        #     print(digis_sdf)
+            
+        #     print("filtered")
+        #     print(simhits_sdf.merge(digis_sdf, on=["wh", "sc", "st", "sl", "l", "w"], how="inner"))
+
+        #     if input("continue?") in ["n", "N", "no", "No"]:
+        #         exit(0)
         _build_shower = False
 
         if not simhits_sdf.empty:
