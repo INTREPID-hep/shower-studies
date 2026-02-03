@@ -2,7 +2,7 @@
 
 This repository contains studies related to the development of the shower detection algorithm for the Muon DT L1T of CMS.
 
-The studies are based on the shower primitives generated using the CMSSW emulator ([DTTrigPhase2ShowerProd.cc](https://github.com/cms-sw/cmssw/blob/master/L1Trigger/DTTriggerPhase2/plugins/DTTrigPhase2ShowerProd.cc)). Using this plugin, DTNTuples are created with the code available in this repository: [DTNtuples](https://github.com/DanielEstrada971102/DTNtuples/tree/shower_ntuples).
+The studies are based on the shower primitives generated using the CMSSW emulator ([DTTrigPhase2ShowerProd.cc](https://github.com/cms-sw/cmssw/blob/master/L1Trigger/DTTriggerPhase2/plugins/DTTrigPhase2ShowerProd.cc)). Using this plugin, DTNTuples are created with the code available in this repository: [DTNtuples](https://github.com/INTREPID-hep/DTNtuples/tree/shower_ntuples).
 
 There a few set of DTNTuples already produced accesible in `/lustrefs`:
 
@@ -20,7 +20,7 @@ The subdirectories in this repo contains specific studies on the mentioned data:
 
 4. `filter-studies`: Before the DT primitives are sent to the track finders, they can go through an intermediate stage known as the "Barrel Filter." In this stage, more refined algorithms are applied to cross the information of DT, shower, and RPC primitives (?). This directory contains studies conducted to evaluate which filtering and selection processes are relevant to include in this stage.
 
-Each directory contains more details about the specific tasks performed there. The analyses presented here assume that the frameworks [DTPatternRecognition](https://github.com/DanielEstrada971102/DTPatternRecognition) and [mplDTs](https://github.com/DanielEstrada971102/mplDTs) are being used. Specific versions are listed as DTPatternRecognition@v3.0.0 and mplDTs@v2.2.0-beta.
+Each directory contains more details about the specific tasks performed there. The analyses presented here assume that the frameworks [DTPatternRecognition](https://github.com/INTREPID-hep/DTPatternRecognition) and [mplDTs](https://github.com/INTREPID-hep/mplDTs) are being used. Specific versions are listed as DTPatternRecognition@v3.0.0 and mplDTs@v2.2.0-beta.
 
 ## Installation
 

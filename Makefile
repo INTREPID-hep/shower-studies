@@ -6,8 +6,8 @@ DTPR_PATH?=../DTPatternRecognition
 ENV_DIR?=.venv
 MPLDTS_VERSION?=2.2.0-beta
 DTPR_VERSION?=3.0.0
-_GIT_MPLDTS?=git+https://github.com/DanielEstrada971102/mplDTs.git@v$(MPLDTS_VERSION)
-_GIT_DTPR?=git+https://github.com/DanielEstrada971102/DTPatternRecognition.git@v$(DTPR_VERSION)
+_GIT_MPLDTS?=git+https://github.com/INTREPID-hep/mplDTs.git@v$(MPLDTS_VERSION)
+_GIT_DTPR?=git+https://github.com/INTREPID-hep/DTPatternRecognition.git@v$(DTPR_VERSION)
 
 
 # ------------------------------
@@ -26,7 +26,7 @@ check-local-repos: clone-mpldts-if-needed clone-dtpr-if-needed
 clone-mpldts-if-needed:
 	@if [ ! -d "$(MPLDTS_PATH)" ]; then \
 		echo "📥 Cloning mplDTs into $(MPLDTS_PATH)"; \
-		git clone -b $(MPLDTS_VERSION) https://github.com/DanielEstrada971102/mplDTs.git "$(MPLDTS_PATH)"; \
+		git clone -b $(MPLDTS_VERSION) https://github.com/INTREPID-hep/mplDTs.git "$(MPLDTS_PATH)"; \
 	else \
 		echo "✅ mplDTs repo exists at $(MPLDTS_PATH)"; \
 	fi
@@ -34,7 +34,7 @@ clone-mpldts-if-needed:
 clone-dtpr-if-needed:
 	@if [ ! -d "$(DTPR_PATH)" ]; then \
 		echo "📥 Cloning DTPatternRecognition into $(DTPR_PATH)"; \
-		git clone -b $(DTPR_VERSION) https://github.com/DanielEstrada971102/DTPatternRecognition.git "$(DTPR_PATH)"; \
+		git clone -b $(DTPR_VERSION) https://github.com/INTREPID-hep/DTPatternRecognition.git "$(DTPR_PATH)"; \
 	else \
 		echo "✅ DTPatternRecognition repo exists at $(DTPR_PATH)"; \
 	fi
