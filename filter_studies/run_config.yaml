@@ -59,12 +59,18 @@ particle_types:
         branch: 'ph2TpgPhiEmuAm_superLayer'
       phi: 
         branch: 'ph2TpgPhiEmuAm_phi'
+      phires_conv:
+        expr: '65536.0 / 0.5'
       phiB: 
         branch: 'ph2TpgPhiEmuAm_phiB'
+      phiBres_conv: 
+        expr: '4096.0 / 2.0'
       posLoc_x:
-        branch: 'ph2TpgPhiEmuAm_posLoc_x'
+        src: 'utils.tps_functions.compute_x0'
+        kwargs:
+          ref_frame: "SL13Center"
       dirLoc_phi:
-        branch: 'ph2TpgPhiEmuAm_dirLoc_phi'
+        src: 'utils.tps_functions.compute_psi_local'
       quality: 
         branch: 'ph2TpgPhiEmuAm_quality'
       rpcFlag: 
@@ -73,8 +79,6 @@ particle_types:
         branch: 'ph2TpgPhiEmuAm_BX'
       BX: # then re-define the BX attribute to center it at 0
         expr: '_BX - 20'
-      phires_conv:
-        expr: '65536.0 / 0.5'
       matched_segments: []
       matched_genmuons: []
       matched_showers: []
@@ -123,6 +127,7 @@ particle_types:
       wires_profile: 
         branch: 'ph2Shower_wires_profile'
       matched_tps: []
+    filter: 'p.sl !=2' # only consider showers in SL1 and SL3 at the moment
   simhits:
     amount: 'simHit_nSimHits'
     attributes:
