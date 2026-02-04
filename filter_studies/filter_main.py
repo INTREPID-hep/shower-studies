@@ -3,7 +3,8 @@ import matplotlib.pyplot as plt
 from pandas import DataFrame
 from matplotlib import colors
 from matplotlib.patches import Polygon
-from mpldts.geometry import Station, AMDTSegments
+from mpldts.geometry import AMDTSegments
+from mpldts.geometry import StationsCache
 from mpldts.patches import DTStationPatch, MultiDTSegmentsPatch
 from dtpr.base import NTuple
 from dtpr.utils.functions import color_msg, get_unique_locs
@@ -22,7 +23,8 @@ segs_kwargs = {
     "norm": segs_norm,
 }
 
-_built_stations = {}
+# Cache for built Station objects to avoid redundant constructions
+Station = StationsCache().get 
 _built_stations_patches = {}
 
 BF_neighbor_sectors = {}
@@ -38,15 +40,6 @@ for sector in range(1, 13):
         neighbors_sec.append(14)
     BF_neighbor_sectors[f"BF{sector}"] = neighbors_sec
 
-@cache
-def build_station(wh, sc, st):
-    """Build or retrieve a Station object for given wheel, sector, station."""
-    key = (wh, sc, st)
-    if key in _built_stations:
-        return _built_stations[key]
-    _dt = Station(wheel=wh, sector=sc, station=st)
-    _built_stations[key] = _dt
-    return _dt
 
 def plot_rectangle(ax, rect, color='r', alpha=0.2):
     """Plot a rectangle (polygon) on the given axes."""
@@ -83,6 +76,7 @@ def make_plot(things_to_plot):
         )
     ax.set_xlim(-800, 800)
     ax.set_ylim(-800, 800)
+    ax.set_aspect('equal', adjustable='box')
     plt.show()
     plt.close(fig)
 
@@ -181,7 +175,7 @@ def _analyzer(showers, tps, shower_seg_version=2, debug=False, plot=False):
                 "parent": _parent_dt,  # parent station of the TP
                 "index": _tp.index,
                 "sl": _tp.sl,
-                "angle": -1 * getattr(_tp, "dirLoc_phi"), # CAUTION: angle appears to be bad signed in the ntuple, according to the plots...
+                "angle": getattr(_tp, "dirLoc_phi"),
                 "position": getattr(_tp, "posLoc_x"),
                 "tp_obj": _tp,  # store the TP object for later use
             })
@@ -280,6 +274,8 @@ def main():
     plot = True  # Set to True to enable plotting
 
     for i, ev in enumerate(ntuple.events):
+        if ev is None:
+            continue
         if debug:
             color_msg(f"Event {ev.index}", color="green")
         # if ev.number == 3915:
