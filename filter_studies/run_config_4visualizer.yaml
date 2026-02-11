@@ -97,32 +97,35 @@ particle_types:
     sorter:
       by: 'p.pt'
       reverse: True
-  fwshowers:
+      
+  # FW Showers particle type configuration
+  fwshowers_loaded:
     amount: 'ph2Shower_station'
     attributes:
       wh: 
-        branch: 'ph2Shower_wheel'
+      branch: 'ph2Shower_wheel'
       sc: 
-        branch: 'ph2Shower_sector'
+      branch: 'ph2Shower_sector'
       st: 
-        branch: 'ph2Shower_station'
+      branch: 'ph2Shower_station'
       sl: 
-        branch: 'ph2Shower_superlayer'
+      branch: 'ph2Shower_superlayer'
       nDigis: 
-        branch: 'ph2Shower_ndigis'
+      branch: 'ph2Shower_ndigis'
       BX: 
-        branch: 'ph2Shower_BX'
+      branch: 'ph2Shower_BX'
       min_wire: 
-        branch: 'ph2Shower_min_wire'
+      branch: 'ph2Shower_min_wire'
       max_wire: 
-        branch: 'ph2Shower_max_wire'
+      branch: 'ph2Shower_max_wire'
       avg_pos: 
-        branch: 'ph2Shower_avg_pos'
+      branch: 'ph2Shower_avg_pos'
       avg_time: 
-        branch: 'ph2Shower_avg_time'
+      branch: 'ph2Shower_avg_time'
       wires_profile: 
-        branch: 'ph2Shower_wires_profile'
+      branch: 'ph2Shower_wires_profile'
       matched_tps: []
+
   simhits:
     amount: 'simHit_nSimHits'
     attributes:
@@ -159,8 +162,119 @@ ntuple_preprocessors:
     kwargs:
       threshold: 8
       debug: False
+      Filtersimhits: True
+
+
+  fw_showers_builder:
+    src: "utils.shower_functions.build_fwshowers"
+    kwargs:
+      threshold: [9, 9, 8, 8]
+      use_NN_filter: True
+      debug: False
+  
   fw_shower_analyzer:
     src: "utils.shower_functions.analyze_fwshowers"
+
+
+
+
+
+  filter_matching:
+    src: "filter_main.barrel_filter_analyzer"
+    kwargs:
+      only4true_showers: False
+      shower_seg_version: 2
+      cover_full_cells: False
+
+
+
+  showers-classifier:
+    src: "showers_classification.highpt_showers_identifier"
+    kwargs:
+      highpt_threshold: 1000
+
+
+  #shower_tagging:
+    #src: "utils.shower_functions.highpt_showers_identifier"
+
+    
+
+histo_sources:
+  - efficiencies.shower_histos
+  - barrel_filter_histograms
+  
+
+histo_names:
+  - shower_showeredgenmuon_tag_eff_pttrend
+  - shower_genmuon_tag_eff_pttrend_all
+  - AMTp_showeredgenmuon_tag_eff_pttrend
+  - AMTp_genmuon_tag_eff_pttrend_all
+  - fwshower_eff_afterfilter_MB1
+  - fwshower_eff_afterfilter_MB2
+  - fwshower_eff_afterfilter_MB3
+  - fwshower_eff_afterfilter_MB4
+  - AMTpshowered_AMTps_eff_MB1
+  - AMTpshowered_AMTps_eff_MB2
+  - AMTpshowered_AMTps_eff_MB3
+  - AMTpshowered_AMTps_eff_MB4
+  - AMTpshoweredtagged_AMTps_eff_MB1
+  - AMTpshoweredtagged_AMTps_eff_MB2
+  - AMTpshoweredtagged_AMTps_eff_MB3
+  - AMTpshoweredtagged_AMTps_eff_MB4
+  - seg_eff_afterfilter_MB1
+  - seg_eff_afterfilter_MB2
+  - seg_eff_afterfilter_MB3
+  - seg_eff_afterfilter_MB4
+  - showers_classification
+  - showers_classification_MB1  
+  - showers_classification_MB2
+  - showers_classification_MB3
+  - showers_classification_MB4
+  - LeadingMuon_pt
+  - shower_showeredgenmuon_tag_eff_pttrend_mth3_num
+  - showered_genmuon_meth1_eff
+  - showered_genmuon_meth2_eff
+  - showered_genmuon_meth3_eff
+  # ---- for fwshowers ----
+  - shower_tpfptnfn_MB1
+  - shower_tpfptnfn_MB2
+  - shower_tpfptnfn_MB3
+  - shower_tpfptnfn_MB4
+  - fwshower_eff_MB1
+  - fwshower_eff_MB2
+  - fwshower_eff_MB3
+  - fwshower_eff_MB4
+  - fwshower_eff_MB1_onlytpfp
+  - fwshower_eff_MB2_onlytpfp
+  - fwshower_eff_MB3_onlytpfp
+  - fwshower_eff_MB4_onlytpfp
+  - shower_NN_tpfptnfn_MB1
+  - shower_NN_tpfptnfn_MB2
+  - shower_NN_tpfptnfn_MB3
+  - shower_NN_tpfptnfn_MB4
+
+  # ---- for G4DtNtuple ----
+  #- shower_tpfptnfn_g4
+  # ----- for real showers -----
+  - realshower_type_dist_MB1
+  - realshower_type_dist_MB2
+  - realshower_type_dist_MB3
+  - realshower_type_dist_MB4
+  # -----Shower BX distribution -----
+  - shower_BX_dist # Trigger algorithm, has tp match
+  - shower_BX_dist_all #trigger algortihm no tp match
+  - shower_BX_avg #Average hit for all
+  - Shower_BX_method1 #Average 4 first
+  - Shower_BX_method2 #Average 2 first and 2 last
+  - shower_digis_avg # Average digis per shower
+  - shower_digis_BX_dist # BX distribution of digis per shower
+  - shower_wire_span
+  - shower_wire_span_highpt
+  - tp_wire_span
+  - fp_wire_span
+  # nhits shower distribution
+  - tp_shower_nhits_dist
+  - fp_shower_nhits_dist
 
 # ------------------------------- configuration for dt plots  -------------------------------------#
 plot_configs:

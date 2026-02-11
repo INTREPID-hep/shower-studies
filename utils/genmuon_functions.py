@@ -8,6 +8,10 @@ import math
 from itertools import combinations
 from typing import List, Optional
 
+# Station range for DT detector
+stations = range(1, 5)
+sectors = range(1, 15)
+wheels = range(-2, 3)
 
 def match_genmuon_offline_segment(gm: Particle, seg: Particle, max_dPhi: float, max_dEta: float) -> None:
     """
