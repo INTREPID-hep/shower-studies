@@ -150,12 +150,12 @@ def _analyzer(showers, tps, shower_seg_version=2, debug=False, plot=False):
     for shower in showers:
         wh, sc, st = shower.wh, shower.sc, shower.st
 
-        _tps2use = [tp for tp in tps if tp.wh == wh]
+        _tps2use = [tp for tp in tps if tp.wh == wh and tp.st!= st] # Just take TPs from the same wheel as the shower, but different station
         if not _tps2use:
             continue  # skip if no TPs in the same wheel as the shower --> THIS DEFINES THAT THIS MATCHING IS LIMITED TO THE PHI VIEW
 
         # to avoid building the same station multiple times
-        _dt = build_station(wh, sc, st)
+        _dt = Station(wh, sc, st)
         if plot and (wh, sc, st) not in _things_to_plot["dts"]:
             _things_to_plot["dts"][(wh, sc, st)] = _dt
 
@@ -170,7 +170,7 @@ def _analyzer(showers, tps, shower_seg_version=2, debug=False, plot=False):
         # build dicts with tps information
         _tps_info = []
         for _tp in _tps2use:
-            _parent_dt = build_station(_tp.wh, _tp.sc, _tp.st)
+            _parent_dt = Station(_tp.wh, _tp.sc, _tp.st)
             _tps_info.append({
                 "parent": _parent_dt,  # parent station of the TP
                 "index": _tp.index,
@@ -235,7 +235,6 @@ def barrel_filter_analyzer(ev, only4true_showers=False, shower_seg_version=2, de
         tps = [
             tp for tp in ev.tps 
             if tp.sc in neighbors_sec # Just take TPs from the sectors that lives in the BF sector
-            and (tp.wh, tp.sc, tp.st) not in showers_locs # Ignore TPs that live in the same chamber as the showers (is this correct?)
         ]
         if not tps:
             if debug:
@@ -257,7 +256,7 @@ def main():
         os.path.abspath(
             os.path.join(
                 os.path.dirname(__file__),
-                "run_config_4visualizer.yaml"
+                "run_config.yaml"
             )
         )
     )
@@ -270,7 +269,7 @@ def main():
         )
     ))
     debug = True  # Set to True to enable debug mode
-    only4true_showers = True  # Set to True to analyze only true showers
+    only4true_showers = False  # Set to True to analyze only true showers
     plot = True  # Set to True to enable plotting
 
     for i, ev in enumerate(ntuple.events):
