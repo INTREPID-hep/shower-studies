@@ -52,5 +52,8 @@ make dev-local # Optionally set the paths to the local clones with MPLDTS_PATH=.
 
 **Note**: If you are using the `dev` or `dev-local` targets, remember to activate the virtual environment after the installation, and in case you need to delete it, just deactivate it and remove with `make delete-env`.
 
+> [!IMPORTANT]
+> Since this repository is not a package, path issues may arise when trying to import function from other directories. To avoid this, it is recommended to add the current repository to the `PYTHONPATH` environment variable. You can get the command to do this with `make set-path`.
+
 > [!TIP]
 > If it is just first time using the `DTPatternRecognition` tool, you can take a look at [this example](test.py).
