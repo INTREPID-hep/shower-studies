@@ -1,0 +1,33 @@
+amount: 'seg_nSegments'
+
+attributes:
+  wh: 
+    branch: 'seg_wheel'
+  sc: 
+    branch: 'seg_sector'
+  st: 
+    branch: 'seg_station'
+  local_pos_x: 
+    branch: 'seg_localPosX'
+  local_pos_y: 
+    branch: 'seg_localPosY'
+  local_pos_z: 
+    branch: 'seg_localPosZ'
+  local_dir_x: 
+    branch: 'seg_localDirX'
+  local_dir_y: 
+    branch: 'seg_localDirY'
+  local_dir_z: 
+    branch: 'seg_localDirZ'
+  global_pos_x: 
+    branch: 'seg_globalPosX'
+  global_pos_y: 
+    branch: 'seg_globalPosY'
+  global_pos_z: 
+    branch: 'seg_globalPosZ'
+  global_dir_x: 
+    branch: 'seg_globalDirX'
+  global_dir_y: 
+    branch: 'seg_globalDirY'
+  global_dir_z: 
+    branch: 'seg_globalDirZ'

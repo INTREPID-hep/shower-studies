@@ -1,0 +1,43 @@
+amount: 'simHit_nSimHits'
+
+attributes:
+  wh: 
+    branch: 'simHit_wheel'
+  sc: 
+    branch: 'simHit_sector'
+  st: 
+    branch: 'simHit_station'
+  sl: 
+    branch: 'simHit_superlayer'
+  l: 
+    branch: 'simHit_layer'
+  w: 
+    branch: 'simHit_cell'
+  time:
+    branch: 'simHit_time'
+  process_type: 
+    branch: 'simHit_process_type'
+  particle_type: 
+    branch: 'simHit_PDG'
+  local_pos_x: 
+    branch: 'simHit_xlocal'
+  local_pos_y: 
+    branch: 'simHit_ylocal'
+  local_pos_z: 
+    branch: 'simHit_zlocal'
+  edep: 
+    branch: 'simHit_edep'
+  track_id: 
+    branch: 'simHit_trackId'
+  parent_pdgId: 
+    branch: 'simHit_parentId'
+  track_length: 
+    branch: 'simHit_trackLength'
+  vertex_x: 
+    branch: 'simHit_vertexPosX'
+  vertex_y:
+    branch: 'simHit_vertexPosY'
+  vertex_z: 
+    branch: 'simHit_vertexPosZ'
+  vertex_energy: 
+    branch: 'simHit_vertexKineticEnergy'

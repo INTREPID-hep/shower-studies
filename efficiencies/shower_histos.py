@@ -96,7 +96,7 @@ def get_locs_to_check(reader, station=1, opt=1, by_sl=False):
 
     return indexs
 
-def compute_tpfptnfn(reader, station=1, opt=1, by_sl=False):
+def compute_tpfptnfn(reader, station=1, opt=1, by_sl=False, locs_getter=get_locs_to_check):
     """
     Classifies true positives, false positives, true negatives, and false negatives based on fwshowers and realshowers.
 
@@ -112,7 +112,7 @@ def compute_tpfptnfn(reader, station=1, opt=1, by_sl=False):
     """
     output = []
 
-    indexs = get_locs_to_check(reader, station=station, opt=opt, by_sl=by_sl)
+    indexs = locs_getter(reader, station=station, opt=opt, by_sl=by_sl)
 
     # with open("output_tpfptnfn.txt", "a") as f:
     for index in indexs:
@@ -143,14 +143,14 @@ def compute_tpfptnfn(reader, station=1, opt=1, by_sl=False):
 
     return output
 
-def tpfptnfn_func(reader, station=1, opt=1, by_sl=False):
-    return [bin for bin in compute_tpfptnfn(reader, station=station, opt=opt, by_sl=by_sl)]
+def tpfptnfn_func(reader, station=1, opt=1, by_sl=False, locs_getter=get_locs_to_check):
+    return [bin for bin in compute_tpfptnfn(reader, station=station, opt=opt, by_sl=by_sl, locs_getter=locs_getter)]
 
-def shower_eff_func(reader, station=1, opt=1, by_sl=False):
-    return [wh for wh, *_a in get_locs_to_check(reader, station=station, opt=opt, by_sl=by_sl)]
+def shower_eff_func(reader, station=1, opt=1, by_sl=False, locs_getter=get_locs_to_check):
+    return [wh for wh, *_a in locs_getter(reader, station=station, opt=opt, by_sl=by_sl)]
 
-def shower_eff_numdef(reader, station=1, opt=1, by_sl=False):
-    return [(cls == 0 or cls == 2) for _, cls in compute_tpfptnfn(reader, station=station, opt=opt, by_sl=by_sl)]
+def shower_eff_numdef(reader, station=1, opt=1, by_sl=False, locs_getter=get_locs_to_check):
+    return [(cls == 0 or cls == 2) for _, cls in compute_tpfptnfn(reader, station=station, opt=opt, by_sl=by_sl, locs_getter=locs_getter)]
 
 for st in stations:
     histos.update({ # conf maps

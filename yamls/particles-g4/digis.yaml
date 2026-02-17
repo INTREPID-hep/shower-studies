@@ -1,0 +1,26 @@
+amount: 'digi_nDigis'
+
+attributes:
+  wh: 
+    branch: 'digi_wheel'
+  sc: 
+    branch: 'digi_sector'
+  st: 
+    branch: 'digi_station'
+  sl: 
+    branch: 'digi_superlayer'
+  w: 
+    branch: 'digi_cell'
+  l: 
+    branch: 'digi_layer'
+  parent_pdgId: 
+    branch: 'digi_parentPDG'
+  track_id: 
+    branch: 'digi_trackId'
+  time: 
+    branch: 'digi_TDC'
+  BX:
+    expr: 'time // 25 if time is not None else None'
+
+sorter:
+  by: 'p.BX'

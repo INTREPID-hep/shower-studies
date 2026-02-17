@@ -1,0 +1,22 @@
+amount: 'gen_nGenParts'
+
+attributes:
+  pt: 
+    branch: 'gen_pt'
+  eta: 
+    branch: 'gen_eta'
+  phi: 
+    branch: 'gen_phi'
+  charge: 
+    branch: 'gen_charge'
+  pdgId: 
+    branch: 'gen_pdgId'
+  rad_energy: 
+    branch: 'gen_radEnergy'
+  n_secondaries:
+    branch: 'gen_nSecondaries'
+  showered: False
+
+sorter:
+  by: 'p.pt'
+  reverse: True
