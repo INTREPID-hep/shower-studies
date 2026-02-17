@@ -68,10 +68,13 @@ def build_fwshowers(ev: Event, threshold: Optional[List[int]] = None, debug: Opt
     if not hasattr(ev, "digis"):
             warnings.warn("'digis' is not included in _PARTICLE_TYPES. Please check the config YAML file. Skipping firmware shower building.")
             return
+
+    setattr(ev, "fwshowers", [])    
+    if not ev.digis:
+        return
     #prepare the event to store the showers
     Has_shower_builder=np.zeros((5,15,5,3), dtype=bool)
 
-    setattr(ev, "fwshowers", [])    
     Active_regions=[]  
     MaxBX=max(ev.digis, key=lambda d: d.BX, default=None).BX  
     Hit_vector_SL = np.zeros((5, 15, 5, 3, int(MaxBX+1)), dtype=int)
@@ -81,18 +84,18 @@ def build_fwshowers(ev: Event, threshold: Optional[List[int]] = None, debug: Opt
     Hits_per_Bx= np.zeros((5, 15, 5, 3, int(MaxBX+1)), dtype=int)
     Hits_profile = np.zeros((5, 15, 5, 3, 97, int(MaxBX+1)), dtype=int)
     shower_profile= np.zeros(96, dtype=int)  # to store the shower profile for debug plots
-    if ev.digis!=[]:
-        for digi in ev.digis:
-            wh, sc, st, sl = digi.wh, digi.sc, digi.st, digi.sl   
-            #Hotwire_logic;
-            if Lastfired_BX[wh+2, sc, st, sl-1, digi.w]!=digi.BX and Lastfired_BX[wh+2, sc, st, sl-1, digi.w]!=digi.BX+1 :  # SL index adjusted to 0,1,2 
-                Lastfired_BX[wh+2, sc, st, sl-1, digi.w]=digi.BX
-                Active_regions.append((wh, sc, st, sl))
-                Hits_profile[wh+2, sc, st, sl-1, digi.w, int(digi.BX)] += 1  # SL index adjusted to 0,1,2
-                Hits_per_Bx[wh+2, sc, st, sl-1, int(digi.BX)] += 1  # SL index adjusted to 0,1,2
-                Hit_vector_SL[wh+2, sc, st, sl-1, int(digi.BX):int(digi.BX)+16] += 1  # SL index adjusted to 0,1,2
-                hit_BX[wh+2, sc, st, sl-1, int(digi.BX)] = int(digi.BX) # array to store the value of the BX
-                Hits_vector_SL[wh+2, sc, st, sl-1, digi.w] = 1  # SL index adjusted to 0,1,2
+    
+    for digi in ev.digis:
+        wh, sc, st, sl = digi.wh, digi.sc, digi.st, digi.sl   
+        #Hotwire_logic;
+        if Lastfired_BX[wh+2, sc, st, sl-1, digi.w]!=digi.BX and Lastfired_BX[wh+2, sc, st, sl-1, digi.w]!=digi.BX+1 :  # SL index adjusted to 0,1,2 
+            Lastfired_BX[wh+2, sc, st, sl-1, digi.w]=digi.BX
+            Active_regions.append((wh, sc, st, sl))
+            Hits_profile[wh+2, sc, st, sl-1, digi.w, int(digi.BX)] += 1  # SL index adjusted to 0,1,2
+            Hits_per_Bx[wh+2, sc, st, sl-1, int(digi.BX)] += 1  # SL index adjusted to 0,1,2
+            Hit_vector_SL[wh+2, sc, st, sl-1, int(digi.BX):int(digi.BX)+16] += 1  # SL index adjusted to 0,1,2
+            hit_BX[wh+2, sc, st, sl-1, int(digi.BX)] = int(digi.BX) # array to store the value of the BX
+            Hits_vector_SL[wh+2, sc, st, sl-1, digi.w] = 1  # SL index adjusted to 0,1,2
     ish=0        
 
     for active_region in set(Active_regions):
@@ -271,7 +274,7 @@ def build_real_showers(ev: Event, threshold: Optional[int] = None,Filtersimhits:
             # hits are spread out in the chamber
             spread = simhits_sdf["w"].std()**2 > 1
             # are duplicated matched segments
-            matched_segments = [seg for gm in ev.genmuons for seg in getattr(gm, 'matched_segments', [])]
+            matched_segments = ev.segs #[seg for gm in ev.genmuons for seg in getattr(gm, 'matched_segments', [])]
             if matched_segments:
                 are_duplicated_segments = len(matched_segments) > len(get_unique_locs(matched_segments, loc_ids=["wh", "sc", "st"]))
             else:
@@ -338,3 +341,18 @@ def analyze_fwshowers(ev: Event) -> None:
             shower.is_true_shower = True
         else:
             shower.is_true_shower = False
+
+def drop_fwshowers(ev: Event) -> None:
+    """
+    Drop firmware showers that are predicted as not real by the NN filter.
+    
+    :param ev: The event containing fwshowers to filter
+    :type ev: Event
+    :return: None, modifies the event by removing fwshowers that are predicted as not real
+    :rtype: None
+    """
+    if not hasattr(ev, "fwshowers"):
+        warnings.warn("'fwshowers' is not included in _PARTICLE_TYPES. Please check the config YAML file. Skipping shower dropping.")
+        return
+
+    ev.fwshowers = [shower for shower in ev.fwshowers if getattr(shower, 'isnot_dropped', True)]
