@@ -324,3 +324,18 @@ def analyze_fwshowers(ev: Event) -> None:
             shower.is_true_shower = True
         else:
             shower.is_true_shower = False
+
+def drop_fwshowers(ev: Event) -> None:
+    """
+    Drop firmware showers that are predicted as not real by the NN filter.
+    
+    :param ev: The event containing fwshowers to filter
+    :type ev: Event
+    :return: None, modifies the event by removing fwshowers that are predicted as not real
+    :rtype: None
+    """
+    if not hasattr(ev, "fwshowers"):
+        warnings.warn("'fwshowers' is not included in _PARTICLE_TYPES. Please check the config YAML file. Skipping shower dropping.")
+        return
+
+    ev.fwshowers = [shower for shower in ev.fwshowers if getattr(shower, 'isnot_dropped', True)]
