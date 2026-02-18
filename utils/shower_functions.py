@@ -68,10 +68,12 @@ def build_fwshowers(ev: Event, threshold: Optional[List[int]] = None, debug: Opt
     if not hasattr(ev, "digis"):
             warnings.warn("'digis' is not included in _PARTICLE_TYPES. Please check the config YAML file. Skipping firmware shower building.")
             return
+    setattr(ev, "fwshowers", [])    
+    if not ev.digis:
+        return
     #prepare the event to store the showers
     Has_shower_builder=np.zeros((5,15,5,3), dtype=bool)
 
-    setattr(ev, "fwshowers", [])    
     Active_regions=[]  
     MaxBX=max(ev.digis, key=lambda d: d.BX, default=None).BX  
     Hit_vector_SL = np.zeros((5, 15, 5, 3, int(MaxBX+1)), dtype=int)
@@ -81,18 +83,18 @@ def build_fwshowers(ev: Event, threshold: Optional[List[int]] = None, debug: Opt
     Hits_per_Bx= np.zeros((5, 15, 5, 3, int(MaxBX+1)), dtype=int)
     Hits_profile = np.zeros((5, 15, 5, 3, 97, int(MaxBX+1)), dtype=int)
     shower_profile= np.zeros(96, dtype=int)  # to store the shower profile for debug plots
-    if ev.digis!=[]:
-        for digi in ev.digis:
-            wh, sc, st, sl = digi.wh, digi.sc, digi.st, digi.sl   
-            #Hotwire_logic;
-            if Lastfired_BX[wh+2, sc, st, sl-1, digi.w]!=digi.BX and Lastfired_BX[wh+2, sc, st, sl-1, digi.w]!=digi.BX+1 :  # SL index adjusted to 0,1,2 
-                Lastfired_BX[wh+2, sc, st, sl-1, digi.w]=digi.BX
-                Active_regions.append((wh, sc, st, sl))
-                Hits_profile[wh+2, sc, st, sl-1, digi.w, int(digi.BX)] += 1  # SL index adjusted to 0,1,2
-                Hits_per_Bx[wh+2, sc, st, sl-1, int(digi.BX)] += 1  # SL index adjusted to 0,1,2
-                Hit_vector_SL[wh+2, sc, st, sl-1, int(digi.BX):int(digi.BX)+16] += 1  # SL index adjusted to 0,1,2
-                hit_BX[wh+2, sc, st, sl-1, int(digi.BX)] = int(digi.BX) # array to store the value of the BX
-                Hits_vector_SL[wh+2, sc, st, sl-1, digi.w] = 1  # SL index adjusted to 0,1,2
+
+    for digi in ev.digis:
+        wh, sc, st, sl = digi.wh, digi.sc, digi.st, digi.sl   
+        #Hotwire_logic;
+        if Lastfired_BX[wh+2, sc, st, sl-1, digi.w]!=digi.BX and Lastfired_BX[wh+2, sc, st, sl-1, digi.w]!=digi.BX+1 :  # SL index adjusted to 0,1,2 
+            Lastfired_BX[wh+2, sc, st, sl-1, digi.w]=digi.BX
+            Active_regions.append((wh, sc, st, sl))
+            Hits_profile[wh+2, sc, st, sl-1, digi.w, int(digi.BX)] += 1  # SL index adjusted to 0,1,2
+            Hits_per_Bx[wh+2, sc, st, sl-1, int(digi.BX)] += 1  # SL index adjusted to 0,1,2
+            Hit_vector_SL[wh+2, sc, st, sl-1, int(digi.BX):int(digi.BX)+16] += 1  # SL index adjusted to 0,1,2
+            hit_BX[wh+2, sc, st, sl-1, int(digi.BX)] = int(digi.BX) # array to store the value of the BX
+            Hits_vector_SL[wh+2, sc, st, sl-1, digi.w] = 1  # SL index adjusted to 0,1,2
     ish=0        
 
     for active_region in set(Active_regions):
@@ -240,10 +242,6 @@ def build_real_showers(ev: Event, threshold: Optional[int] = None,Filtersimhits:
             elif digis_sdf.empty:
                 # If there are no digis, clear simhits_sdf as there are no matching coordinates
                 simhits_sdf = DataFrame()
-        
-        
-
-
 
         _build_shower = False
 
