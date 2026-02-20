@@ -4,7 +4,7 @@ from pandas import DataFrame
 from matplotlib import colors
 from matplotlib.patches import Polygon
 from mpldts.geometry import AMDTSegments
-from mpldts.geometry import StationsCache
+from mpldts.geometry.station import STATION_CACHE
 from mpldts.patches import DTStationPatch, MultiDTSegmentsPatch
 from dtpr.base import NTuple
 from dtpr.utils.functions import color_msg, get_unique_locs
@@ -24,7 +24,7 @@ segs_kwargs = {
 }
 
 # Cache for built Station objects to avoid redundant constructions
-Station = StationsCache().get 
+Station = STATION_CACHE.get 
 _built_stations_patches = {}
 
 BF_neighbor_sectors = {}
