@@ -325,6 +325,7 @@ def analyze_fwshowers(ev: Event) -> None:
         else:
             shower.is_true_shower = False
 
+
 def drop_fwshowers(ev: Event) -> None:
     """
     Drop firmware showers that are predicted as not real by the NN filter.

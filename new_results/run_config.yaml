@@ -1,0 +1,25 @@
+!include ../yamls/run_config_v2.yaml
+
+ntuple_preprocessors: !include ntuple_preprocessors.yaml
+
+histo_sources:
+  - efficiencies.shower_histos
+  - filter_studies.barrel_filter_histograms
+
+histo_names:
+  - fwshower_eff_MB1
+  - fwshower_eff_MB2
+  - fwshower_eff_MB3
+  - fwshower_eff_MB4
+  - shower_tpfptnfn_MB1
+  - shower_tpfptnfn_MB2
+  - shower_tpfptnfn_MB3
+  - shower_tpfptnfn_MB4
+  - shower_tpfptnfn_g4
+
+  - shower_showeredgenmuon_tag_eff_pttrend
+  - showers_classification
+  - showers_classification_MB1  
+  - showers_classification_MB2
+  - showers_classification_MB3
+  - showers_classification_MB4
