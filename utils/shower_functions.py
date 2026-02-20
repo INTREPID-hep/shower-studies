@@ -66,89 +66,167 @@ def build_fwshowers(ev: Event, threshold: Optional[List[int]] = None, debug: Opt
     :rtype: None
     """
     if not hasattr(ev, "digis"):
-            warnings.warn("'digis' is not included in _PARTICLE_TYPES. Please check the config YAML file. Skipping firmware shower building.")
-            return
-    setattr(ev, "fwshowers", [])    
+        warnings.warn(
+            "'digis' is not included in _PARTICLE_TYPES. Please check the config YAML file. "
+            "Skipping firmware shower building."
+        )
+        return
+
+    # Prepare output container
+    setattr(ev, "fwshowers", [])
+
+    # Handle missing threshold (keep behavior flexible; adjust defaults if your project expects otherwise)
+    if threshold is None:
+        # Typical st is 1..4 in many DT-like conventions; you used threshold[st-1]
+        # Provide a safe default of zeros (i.e., everything passes) rather than crashing.
+        threshold = [8, 8, 8, 8]
+
+    # Fast exit
     if not ev.digis:
         return
-    #prepare the event to store the showers
-    Has_shower_builder=np.zeros((5,15,5,3), dtype=bool)
 
-    Active_regions=[]  
-    MaxBX=max(ev.digis, key=lambda d: d.BX, default=None).BX  
-    Hit_vector_SL = np.zeros((5, 15, 5, 3, int(MaxBX+1)), dtype=int)
-    Hits_vector_SL = np.zeros((5, 15, 5, 3, 128), dtype=int)
-    Lastfired_BX = np.zeros((5, 15, 5, 3, 128), dtype=int)
-    hit_BX= np.zeros((5, 15, 5, 3, int(MaxBX+1)), dtype=int)
-    Hits_per_Bx= np.zeros((5, 15, 5, 3, int(MaxBX+1)), dtype=int)
-    Hits_profile = np.zeros((5, 15, 5, 3, 97, int(MaxBX+1)), dtype=int)
-    shower_profile= np.zeros(96, dtype=int)  # to store the shower profile for debug plots
+    # Workspace arrays
+    Has_shower_builder = np.zeros((5, 15, 5, 3), dtype=bool)
 
+    MaxBX = int(max(ev.digis, key=lambda d: d.BX).BX)
+    window = 16
+    bx_len = MaxBX + window + 1  # +1 for the end-marker at bx+window
+
+    # Diff array for windowed hit accumulation, then cumsum to materialize
+    Hit_vector_SL_diff = np.zeros((5, 15, 5, 3, bx_len), dtype=np.int32)
+
+    # Per-wire occupancy in a region (for min/max wire)
+    Hits_vector_SL = np.zeros((5, 15, 5, 3, 128), dtype=np.uint8)
+
+    # Hotwire gating: last accepted BX per (region, wire)
+    # Sentinel avoids incorrectly rejecting BX=0
+    Lastfired_BX = np.full((5, 15, 5, 3, 128), -999, dtype=np.int16)
+
+    # Per-BX hit counts (used to find earliest BX in the shower window)
+    Hits_per_Bx = np.zeros((5, 15, 5, 3, MaxBX + 1), dtype=np.int16)
+
+    # Wire profile vs BX for each region (97 wires in your code)
+    Hits_profile = np.zeros((5, 15, 5, 3, 97, MaxBX + 1), dtype=np.int16)
+
+    # Track which regions got any accepted digi
+    Active_regions: set[tuple[int, int, int, int]] = set()
+
+    # Pre-index digis by region so we don't scan ev.digis for each shower
+    # (still filter by BX window later)
+    region_to_digis: dict[tuple[int, int, int, int], list] = {}
+
+    # -------------------------
+    # First pass: hotwire filter + fill histograms
+    # -------------------------
     for digi in ev.digis:
-        wh, sc, st, sl = digi.wh, digi.sc, digi.st, digi.sl   
-        #Hotwire_logic;
-        if Lastfired_BX[wh+2, sc, st, sl-1, digi.w]!=digi.BX and Lastfired_BX[wh+2, sc, st, sl-1, digi.w]!=digi.BX+1 :  # SL index adjusted to 0,1,2 
-            Lastfired_BX[wh+2, sc, st, sl-1, digi.w]=digi.BX
-            Active_regions.append((wh, sc, st, sl))
-            Hits_profile[wh+2, sc, st, sl-1, digi.w, int(digi.BX)] += 1  # SL index adjusted to 0,1,2
-            Hits_per_Bx[wh+2, sc, st, sl-1, int(digi.BX)] += 1  # SL index adjusted to 0,1,2
-            Hit_vector_SL[wh+2, sc, st, sl-1, int(digi.BX):int(digi.BX)+16] += 1  # SL index adjusted to 0,1,2
-            hit_BX[wh+2, sc, st, sl-1, int(digi.BX)] = int(digi.BX) # array to store the value of the BX
-            Hits_vector_SL[wh+2, sc, st, sl-1, digi.w] = 1  # SL index adjusted to 0,1,2
-    ish=0        
+        wh, sc, st, sl = int(digi.wh), int(digi.sc), int(digi.st), int(digi.sl)
+        iwh = wh + 2
+        isl = sl - 1
+        w = int(digi.w)
+        bx = int(digi.BX)
 
-    for active_region in set(Active_regions):
-        #process_layer
-        wh, sc, st, sl = active_region
-        if  Hit_vector_SL[wh+2, sc, st, sl-1, :].max() >= threshold[st-1]:  # SL index adjusted to 0,1,2
-            
-            Has_shower_builder[wh+2, sc, st, sl-1] = True
-            #maxhits
-            nhits=Hit_vector_SL[wh+2, sc, st, sl-1, :].max()
-            peak= np.where(Hit_vector_SL[wh+2, sc, st, sl-1, :] == nhits)[0][0] # Get the first index of the peak
-            BXs_in_shower=hit_BX[wh+2, sc, st, sl-1, peak-16:peak+1]
-            BX=min(BXs_in_shower[BXs_in_shower>0]) if BXs_in_shower[BXs_in_shower>0].size>0 else None
-            Hits_inShower=Hits_per_Bx[wh+2, sc, st, sl-1, peak-16:peak+1]
-            average_BX_hits=sum((BXs_in_shower*Hits_inShower))/sum(Hits_inShower) if sum(Hits_inShower)>0 else None
-            Mehtod1_BX=int(np.mean(BXs_in_shower[BXs_in_shower > 0][:4])) if (BXs_in_shower[BXs_in_shower > 0].size > 0) else None
-            Method2_BX = int(np.mean(np.concatenate([BXs_in_shower[BXs_in_shower > 0][:2], BXs_in_shower[BXs_in_shower > 0][-2:]]))) if (BXs_in_shower[BXs_in_shower > 0].size > 0) else None
-            # Find non-zero indices in Hits_vector_SL for this region
-            wire_indices = np.nonzero(Hits_vector_SL[wh+2, sc, st, sl-1])[0]
-            min_wire = int(wire_indices.min()) if wire_indices.size > 0 else None
-            max_wire = int(wire_indices.max()) if wire_indices.size > 0 else None  
-            digis=[]
-            for hits in ev.digis:
-                if hits.wh==wh and hits.sc==sc and hits.st==st and hits.sl==sl and hits.BX>=peak-16 and hits.BX<=peak:
-                    digis.append(hits)
-            _shower = Particle(index=ish, wh=wh, sc=sc, st=st, nDigis=nhits, BX=BX, name="Shower")
-            _shower.average_BX_hits = average_BX_hits
-            _shower.min_wire = min_wire
-            _shower.digis = digis
-            _shower.max_wire = max_wire       
-            _shower.shower_profile = Hits_profile[wh+2, sc, st, sl-1, :, peak-16:peak+1].sum(axis=1)  # SL index adjusted to 0,1,2
-            _shower.sl = sl
-            _shower.BXM1=Mehtod1_BX
-            _shower.BXM2=Method2_BX
-            _shower.matched_tps = []  # Initialize matched_tps
-            if use_NN_filter and _shower_model is not None and _scaler is not None:
-                # reshape to (1, 97) and scale
-                profile_np = _shower.shower_profile.astype(np.float32).reshape(1, -1)
-                profile_scaled = _scaler.transform(profile_np)
-                # convert to torch tensor
-                x = torch.tensor(profile_scaled, dtype=torch.float32)
-                # model prediction
-                with torch.no_grad():
-                    logits = _shower_model(x)
-                    prob = torch.sigmoid(logits).item()
-                _shower.prediction_value = prob
-                _shower.isnot_dropped = prob > 0.5
+        # # Basic bounds safety (optional; remove if you trust inputs and want max speed)
+        # if not (0 <= iwh < 5 and 0 <= sc < 15 and 0 <= st < 5 and 0 <= isl < 3):
+        #     continue
+        # if not (0 <= w < 128):
+        #     continue
+        # if bx < 0 or bx > MaxBX:
+        #     continue
 
-            else:
-                # fallback: no NN, never drop shower
-                _shower.prediction_value = None
-                _shower.isnot_dropped = True                            
-        
-            ev.fwshowers.append(_shower)
+        last = int(Lastfired_BX[iwh, sc, st, isl, w])
+
+        # Hotwire logic: discard if there's already a hit in BX or BX-1 for same (region, wire)
+        if last == bx or last == bx - 1:
+            continue
+
+        Lastfired_BX[iwh, sc, st, isl, w] = bx
+        Active_regions.add((wh, sc, st, sl))
+
+        # Index digis by region for later shower digi attachment
+        region_to_digis.setdefault((wh, sc, st, sl), []).append(digi)
+
+        # Fill profiles/counts
+        if w < 97:
+            Hits_profile[iwh, sc, st, isl, w, bx] += 1
+        Hits_per_Bx[iwh, sc, st, isl, bx] += 1
+        Hits_vector_SL[iwh, sc, st, isl, w] = 1
+
+        # Range add for windowed hit vector: +1 at bx, -1 at bx+window
+        Hit_vector_SL_diff[iwh, sc, st, isl, bx] += 1
+        Hit_vector_SL_diff[iwh, sc, st, isl, bx + window] -= 1
+
+    # Materialize 16-wide windowed hit vector for all regions at once
+    Hit_vector_SL = np.cumsum(Hit_vector_SL_diff, axis=-1)[..., : MaxBX + 1]
+
+    # -------------------------
+    # Second pass: build showers per active region
+    # -------------------------
+    ish = 0
+    for (wh, sc, st, sl) in Active_regions:
+        iwh = wh + 2
+        isl = sl - 1
+
+        # Guard threshold indexing (your code assumes st starts at 1)
+        thr_idx = st - 1
+        if thr_idx < 0 or thr_idx >= len(threshold):
+            # If station indexing isn't as expected, skip safely
+            continue
+
+        vec = Hit_vector_SL[iwh, sc, st, isl, :]
+        nhits = int(vec.max())
+        if nhits < int(threshold[thr_idx]):
+            continue
+
+        Has_shower_builder[iwh, sc, st, isl] = True
+
+        # Find the first BX index with the maximum windowed hit count
+        peak = int(np.flatnonzero(vec == nhits)[0])
+
+        # Determine earliest BX in [peak-15, peak] that has any raw hits (Hits_per_Bx > 0)
+        lo = max(0, peak - (window - 1))
+        hi = peak  # inclusive
+        raw_window = Hits_per_Bx[iwh, sc, st, isl, lo : hi + 1]
+        rel = np.flatnonzero(raw_window > 0)
+        BX = int(lo + rel[0]) if rel.size else None
+
+        # Min/max wire in region
+        wire_indices = np.nonzero(Hits_vector_SL[iwh, sc, st, isl])[0]
+        min_wire = int(wire_indices.min()) if wire_indices.size else None
+        max_wire = int(wire_indices.max()) if wire_indices.size else None
+
+        # Attach digis only from this region and BX window (avoid scanning all digis)
+        region_digis = region_to_digis.get((wh, sc, st, sl), [])
+        shower_digis = [
+            d for d in region_digis if lo <= int(d.BX) <= hi
+        ]
+
+        _shower = Particle(index=ish, wh=wh, sc=sc, st=st, nDigis=nhits, BX=BX, name="Shower")
+        _shower.min_wire = min_wire
+        _shower.max_wire = max_wire
+        _shower.digis = shower_digis
+        _shower.sl = sl
+
+        # Shower profile summed over BX window (axis=BX)
+        # Your Hits_profile has 97 wires; you used `:` before, keep that:
+        _shower.shower_profile = Hits_profile[iwh, sc, st, isl, :, lo : hi + 1].sum(axis=1)
+
+        _shower.matched_tps = []
+
+        if use_NN_filter and _shower_model is not None and _scaler is not None:
+            profile_np = _shower.shower_profile.astype(np.float32).reshape(1, -1)
+            profile_scaled = _scaler.transform(profile_np)
+            x = torch.tensor(profile_scaled, dtype=torch.float32)
+            with torch.no_grad():
+                logits = _shower_model(x)
+                prob = torch.sigmoid(logits).item()
+            _shower.prediction_value = prob
+            _shower.isnot_dropped = prob > 0.5
+        else:
+            _shower.prediction_value = None
+            _shower.isnot_dropped = True
+
+        ev.fwshowers.append(_shower)
+        ish += 1
 
 def _process_superlayer(ev_BXs: List[int], digis_df: DataFrame, threshold: int) -> Tuple[bool, int, int, ndarray]:
     """
