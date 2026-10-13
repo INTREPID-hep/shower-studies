@@ -15,7 +15,7 @@ attributes:
     branch: 'ph2TpgPhiEmuAm_phiB'
   posLoc_x:
     branch: 'ph2TpgPhiEmuAm_posLoc_x'
-  dirLoc_phi:
+  dirLoc_psi:
     branch: 'ph2TpgPhiEmuAm_dirLoc_phi'
   quality: 
     branch: 'ph2TpgPhiEmuAm_quality'

@@ -19,10 +19,10 @@ attributes:
     expr: '4096.0 / 2.0'
   posLoc_x:
     branch: 'ph2TpgPhiEmuAm_posLoc_x'
-  _dirLoc_phi:
+  _dirLoc_psi:
     branch: 'ph2TpgPhiEmuAm_dirLoc_phi'
-  dirLoc_phi:
-    expr: '-1 * _dirLoc_phi + 180' # add 180 to point the angle outwards the CMS
+  dirLoc_psi:
+    expr: '-1 * _dirLoc_psi + 180' # add 180 to point the angle outwards the CMS
   quality: 
     branch: 'ph2TpgPhiEmuAm_quality'
   rpcFlag: 

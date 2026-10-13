@@ -21,7 +21,7 @@ attributes:
     src: 'utils.tps_functions.compute_x0'
     kwargs:
       ref_frame: "SL13Center"
-  dirLoc_phi:
+  dirLoc_psi:
     src: 'utils.tps_functions.compute_psi_local'
   quality: 
     branch: 'ph2TpgPhiEmuAm_quality'
